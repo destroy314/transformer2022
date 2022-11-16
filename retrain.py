@@ -76,7 +76,7 @@ def train(model, iterator, optimizer, criterion, clip):
 
         loss = criterion(output, trg)
         loss.backward()
-        torch.nn.utils.clip_grad_norm_(model.parameters(), clip)
+        torch.nn.utils.clip_grad.clip_grad_norm_(model.parameters(), clip)
         optimizer.step()
 
         epoch_loss += loss.item()

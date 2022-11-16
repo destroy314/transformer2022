@@ -6,7 +6,7 @@ from torch.optim import Adam
 
 from data import *
 from models.model.transformer import Transformer
-from util.bleu import idx_to_word, get_bleu
+from util.bleu import get_bleu, idx_to_word
 from util.epoch_timer import epoch_time
 
 
@@ -61,7 +61,7 @@ def train(model, iterator, optimizer, criterion, clip):
 
         loss = criterion(output_reshape, trg)
         loss.backward()
-        torch.nn.utils.clip_grad_norm_(model.parameters(), clip)
+        torch.nn.utils.clip_grad.clip_grad_norm_(model.parameters(), clip)
         optimizer.step()
 
         epoch_loss += loss.item()

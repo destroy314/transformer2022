@@ -79,8 +79,6 @@ class Transformer(nn.Module):
         len_q, len_k = q.size(1), k.size(1)
 
         # len_q x len_k
-        mask = (
-            torch.tril(torch.ones(len_q, len_k)).type(torch.BoolTensor).to(self.device)
-        )
+        mask = torch.tril(torch.ones(len_q, len_k)).type(torch.bool).to(self.device)
 
         return mask
