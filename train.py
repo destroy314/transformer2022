@@ -16,7 +16,7 @@ def count_parameters(model):
 
 def initialize_weights(m):
     if hasattr(m, "weight") and m.weight.dim() > 1:
-        nn.init.kaiming_uniform(m.weight.data)
+        nn.init.kaiming_uniform_(m.weight.data)
 
 
 model = Transformer(
@@ -51,8 +51,11 @@ def train(model, iterator, optimizer, criterion, clip):
     model.train()
     epoch_loss = 0
     for i, batch in enumerate(iterator):
-        src = batch.src
-        trg = batch.trg
+        # src = batch.src
+        # trg = batch.trg
+        src, trg = batch  # [27,128] [24,128]
+        src = src.transpose(0, 1)
+        trg = trg.transpose(0, 1)
 
         optimizer.zero_grad()
         output = model(src, trg[:, :-1])
@@ -65,7 +68,7 @@ def train(model, iterator, optimizer, criterion, clip):
         optimizer.step()
 
         epoch_loss += loss.item()
-        print("step :", round((i / len(iterator)) * 100, 2), "% , loss :", loss.item())
+        print("step :", i, " , loss :", loss.item())
 
     return epoch_loss / len(iterator)
 
@@ -88,9 +91,9 @@ def evaluate(model, iterator, criterion):
             total_bleu = []
             for j in range(batch_size):
                 try:
-                    trg_words = idx_to_word(batch.trg[j], loader.target.vocab)
+                    trg_words = idx_to_word(batch.trg[j], vocab_transform[1])
                     output_words = output[j].max(dim=1)[1]
-                    output_words = idx_to_word(output_words, loader.target.vocab)
+                    output_words = idx_to_word(output_words, vocab_transform[0])
                     bleu = get_bleu(
                         hypotheses=output_words.split(), reference=trg_words.split()
                     )
